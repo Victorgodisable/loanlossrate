@@ -1,0 +1,755 @@
+
+
+  {% extends 'base.html' %}
+  {% block content %}
+
+  <style>
+    @keyframes blink {
+        0%, 50%, 100% {
+            opacity: 1;
+        }
+        25%, 75% {
+            opacity: 0;
+        }
+    }
+
+    .traffic-light {
+        display: flex;
+        align-items: center;
+    }
+
+    .red-pip,
+    .green-pip {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-left: 10px;
+        animation: blink 1s infinite; /* Adjust the duration as needed */
+    }
+
+    .red-pip {
+        background-color: red;
+    }
+
+    .green-pip {
+        background-color: green;
+    }
+</style>
+
+  <div class="container-fluid">
+  <form>
+    
+  </form>
+ 
+    <div class="row card-equal-height">
+      <!-- LLR Pricing Assumpti4on Card -->
+      <div class="col-lg-5 d-flex justify-content-center">
+        <div class="card float-card-right mt-4">
+          <div class="card-header">
+    <h3 >LLR Pricing Estimation</h3>
+    </div>
+    <div class="card-body">
+    <form action="result" class="mt-6">
+      <div class="row form-group">
+        <div class="col-md-6">
+       <h6> <label for="payment_plan">Select Payment Plan Name</label></h6>
+       </div>
+       <div class="col-md-6">
+        <select class="form-control select2 custom-select-size" value="" id="payment_plan" name="payment_plan_name" required>
+          <option value="">{{payment_plan_with_instance}}</option>
+          {% for payment_plan_name in payment_plan_names %}
+            <option value="{{ payment_plan_name }}">{{ payment_plan_name }}</option>
+          {% endfor %}
+        </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 text-right">
+          <label>
+            
+          </label>
+        </div>
+        <div class="col-md-4 text-right">
+          <label>
+       
+          </label>
+        </div>
+        <div class="col-md-4 text-right">
+          <label>
+           Old Product Values 
+          </label>
+        </div>
+      </div>
+        <div class="row form-group">
+          <div class="col-md-4">
+            <label for="cost_per_credit">New Cost per Credit:</label>
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" value="{{cost_per_credit}}" id="cost_per_credit" name="cost_per_credit" required>
+            
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" value="{{ old_cost_per_credit }}" id="old_cost_per_credit" name="old_cost_per_credit" readonly>
+          </div>
+        </div>
+      
+        <div class="row form-group">
+          <div class="col-md-4">
+            <label for="loan_duration">New Loan Duration:</label>
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="loan_duration" value="{{loan_duration}}" name="loan_duration" required>
+          </div>
+            <div class="col-md-4">
+            <input type="text" class="form-control" id="old_loan_duration" value="{{ old_loan_duration }}" name="old_loan_duration" readonly>
+          </div>
+        </div>
+      
+        <div class="row form-group">
+          <div class="col-md-4">
+            <label for="deposit">New Deposit:</label>
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="deposit" value="{{deposit}}" name="deposit" required>
+          </div>
+            <div class="col-md-4">
+            <input type="text" class="form-control" id="old_deposit" value="{{ old_deposit }}" name="old_deposit" readonly>
+          </div>
+        </div>
+      
+        <div class="row form-group">
+          <div class="col-md-4">
+            <label for="price">New Unit Price:</label>
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control"value="{{price}}" id="price" name="price" readonly>
+           
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" value="{{ old_product_price }}" id="old_price" name="old_price" readonly>
+          </div>
+        </div>
+      
+        <div class="row form-group">
+          <div class="col-md-4">
+            <label for="deposit_ratio"> New Deposit-to-Price Ratio:</label>
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="deposit_ratio" value="{{deposit_to_price_ratio}}" name="deposit_to_price_ratio" readonly required>
+          </div>
+            <div class="col-md-4">
+            <input type="text" class="form-control" id="old_deposit_ratio" value="{{ old_deposit_to_price_ratio }}" name="old_deposit_to_price_ratio" readonly required>
+          </div>
+        </div>
+      
+        <!-- You can uncomment this if needed
+        <div class="row form-group">
+          <div class="col-md-6">
+            <label for="daily_rate">Enter Daily Rate:</label>
+          </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" id="daily_rate" name="daily_rate_to_price" required>
+          </div>
+        </div>
+        -->
+      
+        <div class="row form-group">
+          <div class="col-md-6">
+            <button type="submit" class="btn btn-primary">Estimate LLR</button>
+          </div>
+          <div class="col-md-3">
+           <b><label for="LLR">Estimated LLR</label></b>
+          </div>
+          <div class="col-md-3">
+            <div class="input-group">
+            <input type="text" class="form-control" value="{{ result|floatformat:2 }}" id="predicted_llr" name="predicted_llr" readonly required>
+            <div class="input-group-append">
+              <span class="input-group-text">%</span>
+            </div>
+           
+          </div>
+          </div>
+        </div>
+      
+<div class="row form-group">
+  <div class="col-md-12">
+      <div class="alert" role="alert" id="traffic-light-alert">
+          <!-- Dynamic content will be added here using JavaScript -->
+      </div>
+  </div>
+</div>
+
+
+
+      <!-- Methodology Section -->
+      <div class="row form-group">
+          <div class="col-md-12">
+              <div class="card mt-4">
+                  <div class="card-header">
+                      <h3>Methodology Used</h3>
+                  </div>
+                  <div class="card-body">
+                      <p>12 prediction models are evaluated using Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and R<sup>2</sup>
+                        , and the best model is used to estimate the LLR using 'Deposit-to-Price Ratio', 'Daily rate', and 'Loan Duration' as inputs (X variables).</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+      </form>
+      </div>
+      </div>
+      </div>
+    <div class="col-lg-5 d-flex justify-content-center">
+      <div class="card mt-5">
+        <div class="card-header">
+          <h3>Goal Seeking</h3>
+        </div>
+        <div class="card-body">
+
+  <form action="save_sales_projection" class="mt-5" method="get">
+    <input type="hidden" value="{{payment_plan.id}}" name="product_detail_id">
+    <input type="hidden" value="{{instance_number}}" name="instance_number">
+    <div class="row">
+    
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="anticipated_growth">Anticipated Growth in Sales/Volume:</label>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" id="anticipated_growth" name="anticipated_growth" required>
+            <div class="input-group-append">
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="price_change">Change in Price:</label>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" id="price_change"  name="price_change" readonly>
+            <div class="input-group-append">
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="row">
+      <div class="col-md-4 text-right">
+        <label>
+          
+        </label>
+      </div>
+      <div class="col-md-4 text-right">
+        <label>
+          Before Price Change
+        </label>
+      </div>
+      <div class="col-md-4 text-right">
+        <label>
+          After Price Change 
+        </label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 text-left">
+        <label>Total Volume:</label>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="total_volume_before" name="total_volume_before"  required>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="total_volume_after" name="total_volume_after" readonly>
+      </div>
+    </div>
+<br>
+  
+
+    <div class="row">
+      <div class="col-md-4 text-left">
+        <label>Average Unit Price:</label>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" value="{{product_price}}" id="unit_price_before" name="unit_price_before" readonly>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="unit_price_after" name="unit_price_after"  readonly>
+      </div>
+    </div>
+    <br>
+
+    <div class="row">
+      <div class="col-md-4 text-left">
+        <label>Gross Revenue:</label>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="gross_revenue_before" name="gross_revenue_before"  readonly>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="gross_revenue_after" name="gross_revenue_after"  readonly>
+      </div>
+    </div>
+    <br>
+
+    <div class="row">
+      <div class="col-md-4 text-left">
+        <label>Current Priced CM2:</label>
+      </div>
+      <div class="col-md-4">
+        <div class="input-group">
+          <input type="text" class="form-control" id="current_priced_cm2_before" name="current_priced_cm2_before" required>
+          <div class="input-group-append">
+            <span class="input-group-text">%</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="input-group">
+          <input type="text" class="form-control" id="current_priced_cm2_after" name="current_priced_cm2_after" readonly>
+          <div class="input-group-append">
+            <span class="input-group-text">%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-4 text-left">
+        <label>Expected CM2 Revenue:</label>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="expected_cm2_revenue_before" name="expected_cm2_revenue_before"  readonly>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="expected_cm2_revenue_after" name="expected_cm2_revenue_after"  readonly>
+      </div>
+    </div>
+    <br>
+
+    <div class="row">
+      <div class="col-md-8 text-left">
+        <div class="form-group">
+          <label for="current_llr">Current LLR:</label>
+        </div>
+      </div>
+      <div class="col-md-3 text-right">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" id="current_llr" value="{{ current_llr |floatformat:2 }}" name="current_llr" readonly>
+            <div class="input-group-append">
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-8 text-left">
+        <div class="form-group">
+          <label for="llr_threshold_zero_sum">LLR Threshold at Which the volume increase is a zero-sum game:</label>
+        </div>
+      </div>
+      <div class="col-md-3 text-right">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" id="llr_threshold_zero_sum" name="llr_threshold_zero_sum" readonly>
+            <div class="input-group-append">
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <button id="goalSeekButton" type="button" onclick="performGoalSeeking()" class="btn btn-primary">Goal Seeking</button></div>
+      </div>
+    <!-- Alert Section with Traffic Light Indicators -->
+    <div class="row form-group">
+      <div class="col-md-6">
+          <label for="reason">Reason:</label>
+      </div>
+      <div class="col-md-6">
+        <select class="form-control" id="reason" name="reason">
+          {% for reason in reasons %}
+              <option value="{{ reason.id }}">{{ reason.name }}</option>
+          {% endfor %}
+      </select>
+      </div>
+  </div>
+    <div class="row form-group">
+      <div class="col-md-6">
+          <label for="comment">Comment:</label>
+      </div>
+      <div class="col-md-6">
+          <textarea type="hidden" class="form-control" id="comment" name="comment" rows="3"></textarea>
+      </div>
+  </div>
+   
+  <div class="row">
+    <div class="col-md-6"><button type="submit" class="btn btn-success">Save Goal</button></div><br><br>
+    <h2 class="btn btn-dark text-left display-2 mb-0">
+      <b>
+          • We assume all factors remain constant.<br>
+          • All other variables are assumed to remain constant.<br>
+          • We assume zero impact on upgrades.
+      </b>
+  </h2>
+  
+  
+  </div>
+  </form>
+  {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+</div>
+</div>
+
+  </div>
+  </div>
+
+  </div> 
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script> <!-- Include jQuery -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      // Assuming you have jQuery loaded (required for Select2)
+      $('#payment_plan').select2();
+    });
+    </script>
+  <script>
+    $(document).ready(function() {
+        // Initially hide the reason and comment sections
+        $("#reason-section").hide();
+        $("#comment-section").hide();
+
+        // Assuming you have an element with the ID "estimate-button" for your estimate button
+        $("#estimate-button").click(function() {
+            // Show or hide the reason and comment sections based on the button click
+            if () {
+                $("#reason-section").show();
+                $("#comment-section").show();
+            } else {
+                $("#reason-section").hide();
+                $("#comment-section").hide();
+            }
+        });
+    });
+</script>
+  
+    <script>
+
+
+// Calculate the price based on the provided formula
+function calculatePrice() {
+        var depositValue = parseFloat(document.getElementById("deposit").value) || 0;
+        var costPerCreditValue = parseFloat(document.getElementById("cost_per_credit").value) || 0;
+        var loanDurationValue = parseFloat(document.getElementById("loan_duration").value) || 0;
+
+        var calculatedPrice = depositValue + (costPerCreditValue * loanDurationValue);
+        
+        document.getElementById("price").value = calculatedPrice.toFixed(2); // Display up to 2 decimal places
+    }
+
+    // Attach event listener to the "Deposit," "Cost Per Credit," and "Loan Duration" inputs
+    var depositInput = document.getElementById("deposit");
+    var costPerCreditInput = document.getElementById("cost_per_credit");
+    var loanDurationInput = document.getElementById("loan_duration");
+
+    depositInput.addEventListener("input", function () {
+        calculateDepositToPriceRatio();
+        calculatePrice();
+    });
+
+    costPerCreditInput.addEventListener("input", function () {
+        calculateDepositToPriceRatio();
+        calculatePrice();
+    });
+
+    loanDurationInput.addEventListener("input", function () {
+        calculateDepositToPriceRatio();
+        calculatePrice();
+    });
+    // Calculate Deposit to Price ratio in percentage
+    function calculateDepositToPriceRatio() {
+      var depositInput = document.getElementById("deposit");
+      var priceInput = document.getElementById("price");
+      var depositRatioInput = document.getElementById("deposit_ratio");
+      
+      var depositValue = parseFloat(depositInput.value);
+      var priceValue = parseFloat(priceInput.value);
+      
+      if (priceValue !== 0) {
+        var depositToPriceRatio = (depositValue / priceValue);
+        depositRatioInput.value = depositToPriceRatio.toFixed(8); // Display up to 2 decimal places
+      } else {
+        depositRatioInput.value = ""; // Clear the value if price is 0 to avoid division by zero
+      }
+    }
+    
+    // Attach event listener to the "Deposit" and "Price" inputs
+    var depositInput = document.getElementById("deposit");
+    var priceInput = document.getElementById("price");
+    depositInput.addEventListener("input", calculateDepositToPriceRatio);
+    priceInput.addEventListener("input", calculateDepositToPriceRatio);
+  </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const firstForm = document.forms[0]; // Assuming the first form is at index 0
+    const secondForm = document.forms[1]; // Assuming the second form is at index 1
+    const goalSeekButton = document.getElementById('goalSeekButton');
+    const trafficLightAlert = document.getElementById('traffic-light-alert');
+
+    function formatWithCommas(inputElem) {
+      let rawValue = inputElem.getAttribute('data-raw-value');
+      let formattedValue = parseFloat(rawValue).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      inputElem.value = formattedValue;
+    }
+
+    function updateFieldValue(inputElem, newValue) {
+      inputElem.setAttribute('data-raw-value', newValue);
+      formatWithCommas(inputElem);
+    }
+
+    const anticipatedGrowthElem = document.getElementById('anticipated_growth');
+    const priceChangeElem = document.getElementById('price_change');
+    const currentLLRElem = document.getElementById('current_llr');
+    const totalVolumeBeforeElem = document.getElementById('total_volume_before');
+    const unitPriceBeforeElem = document.getElementById('unit_price_before');
+    const grossRevenueBeforeElem = document.getElementById('gross_revenue_before');
+    const currentPricedCM2BeforeElem = document.getElementById('current_priced_cm2_before');
+    const expectedCM2RevenueBeforeElem = document.getElementById('expected_cm2_revenue_before');
+    const totalVolumeAfterElem = document.getElementById('total_volume_after');
+    const unitPriceAfterElem = document.getElementById('unit_price_after');
+    const grossRevenueAfterElem = document.getElementById('gross_revenue_after');
+    const currentPricedCM2AfterElem = document.getElementById('current_priced_cm2_after');
+    const expectedCM2RevenueAfterElem = document.getElementById('expected_cm2_revenue_after');
+    const llrThresholdElem = document.getElementById('llr_threshold_zero_sum');
+    const predicted_llrElem = document.getElementById('predicted_llr');
+    const priceElem = document.getElementById('price');
+
+
+    function updateFields() {
+      let anticipated_growth = parseFloat(anticipatedGrowthElem.value) || 0;
+      let price_change = parseFloat(priceChangeElem.value) || 0;
+      let current_llr = parseFloat(currentLLRElem.value) || 0;
+      let total_volume_before = parseFloat(totalVolumeBeforeElem.value) || 0;
+      let unit_price_before = parseFloat(unitPriceBeforeElem.value) || 0;
+      let current_priced_cm2_before = parseFloat(currentPricedCM2BeforeElem.value) || 0;
+      let price =parseFloat(priceElem.value) || 0;
+
+      let price_change_p= ((price -unit_price_before)/ unit_price_before) *100;
+      let total_volume_after = total_volume_before * (1 + anticipated_growth / 100);
+      let unit_price_after = unit_price_before * (1 + price_change / 100);
+      let gross_revenue_before = total_volume_before * unit_price_before;
+      let gross_revenue_after = total_volume_after * unit_price_after;
+      let expected_cm2_revenue_before = gross_revenue_before * current_priced_cm2_before / 100;
+      let expected_cm2_revenue_after = gross_revenue_after * currentPricedCM2AfterElem.value / 100;
+
+      priceChangeElem.value = price_change_p.toFixed(2);
+      totalVolumeAfterElem.value = total_volume_after.toFixed(2);
+      unitPriceAfterElem.value = unit_price_after.toFixed(2);
+      grossRevenueBeforeElem.value = gross_revenue_before.toFixed(2);
+      grossRevenueAfterElem.value = gross_revenue_after.toFixed(2);
+      expectedCM2RevenueBeforeElem.value = expected_cm2_revenue_before.toFixed(2);
+      expectedCM2RevenueAfterElem.value = expected_cm2_revenue_after.toFixed(2);
+    }
+
+    
+
+    function goalSeeking() {
+      let current_priced_cm2_before = parseFloat(currentPricedCM2BeforeElem.value) || 0;
+      let gross_revenue_before = parseFloat(grossRevenueBeforeElem.value) || 0;
+      let gross_revenue_after = parseFloat(grossRevenueAfterElem.value) || 0;
+      let current_llr = parseFloat(currentLLRElem.value) || 0;
+
+      let expected_cm2_revenue_before = gross_revenue_before * current_priced_cm2_before / 100;
+      let current_priced_cm2_after = (expected_cm2_revenue_before * 100) / gross_revenue_after;
+
+      let expected_cm2_revenue_after = gross_revenue_after * current_priced_cm2_after / 100;
+      let llr_threshold = current_llr + (current_priced_cm2_before - current_priced_cm2_after);
+
+      // Check if llr_threshold is less than current_llr, if yes, set llr_threshold to current_llr
+      if(llr_threshold<=0){
+        llrThresholdElem.value = 1;
+
+      }
+      else{
+      llrThresholdElem.value = llr_threshold.toFixed(2);
+      }
+
+      currentPricedCM2AfterElem.value = current_priced_cm2_after.toFixed(2);
+      expectedCM2RevenueAfterElem.value = expected_cm2_revenue_after.toFixed(2);
+      llrThresholdElem.value = llr_threshold.toFixed(2);
+    }
+
+    function updateTrafficLightIndicators() {
+      let currentLLR = parseFloat(predicted_llrElem.value);
+      let llrThresholdZeroSum = parseFloat(llrThresholdElem.value);
+
+      
+      trafficLightAlert.innerHTML = '';
+
+      if (!isNaN(llrThresholdZeroSum)) {
+        if (currentLLR > llrThresholdZeroSum) {
+          let percentage_difference=currentLLR-llrThresholdZeroSum;
+
+          let x = (percentage_difference * gross_revenue_after)/100;
+
+          trafficLightAlert.innerHTML = `
+            <h4 class="alert-heading">Wait a minute!</h4>
+            <p>The Estimated LLR is ${percentage_difference.toFixed(2)}% greater than the threshold of  ${currentLLR.toFixed(2)}%</p>
+            <p>This means KES ${x.toFixed(2)} more loss beyond threshols. </p>
+            <div class="traffic-light">
+              <div class="red-pip"></div><div class="red-pip"></div><div class="red-pip"></div>
+            </div>
+          `;
+          trafficLightAlert.classList.add("alert-danger");
+        } else {
+          trafficLightAlert.innerHTML = `
+            <h4 class="alert-heading">Good To Go!</h4>
+            <p>You can use these Pricing Assumptions.</p>
+            <div class="traffic-light">
+              <div class="green-pip"></div> <div class="green-pip"></div> <div class="green-pip"></div>
+            </div>
+          `;
+          trafficLightAlert.classList.add("alert-success");
+        }
+      }
+    }
+
+    function updateReasonOptions() {
+      let currentLLR = parseFloat(predicted_llrElem.value);
+      let llrThresholdZeroSum = parseFloat(llrThresholdElem.value);
+  
+      const reasonDropdown = document.getElementById('reason');
+  
+      if (predictedLLR < llrThreshold) {
+          // Disable options for cases where predicted LLR is less than the threshold
+          reasonDropdown.options[0].disabled = false; // LLR within threshold
+          reasonDropdown.options[1].disabled = true; // Strategic / competitive move
+          reasonDropdown.options[2].disabled = true; // Acquisition drive
+          reasonDropdown.options[3].disabled = true; // Regulatory /ethical consideration
+          reasonDropdown.options[4].disabled = true; // Margins still higher
+          reasonDropdown.options[5].disabled = true; // Funded Deficit
+          reasonDropdown.options[6].disabled = true; // Other
+      } else {
+          // Enable all options if predicted LLR is greater than or equal to the threshold
+          reasonDropdown.options[1].disabled = false; // Strategic / competitive move
+          reasonDropdown.options[2].disabled = false; // Acquisition drive
+          reasonDropdown.options[3].disabled = false; // Regulatory /ethical consideration
+          reasonDropdown.options[4].disabled = false; // Margins still higher
+          reasonDropdown.options[5].disabled = false; // Funded Deficit
+          reasonDropdown.options[6].disabled = false; // Other
+      }
+  }
+
+    goalSeekButton.addEventListener('click', function () {
+      goalSeeking();
+      updateTrafficLightIndicators();
+      updateReasonOptions();
+    });
+
+    function performGoalSeeking() {
+      goalSeeking();
+      updateTrafficLightIndicators();
+      updateReasonOptions();
+    }
+
+    
+
+    anticipatedGrowthElem.addEventListener('input', updateFields);
+    priceChangeElem.addEventListener('input', updateFields);
+    currentLLRElem.addEventListener('input', updateFields);
+    totalVolumeBeforeElem.addEventListener('input', updateFields);
+    unitPriceBeforeElem.addEventListener('input', updateFields);
+    currentPricedCM2BeforeElem.addEventListener('input', updateFields);
+    currentPricedCM2AfterElem.addEventListener('input', updateFields);
+
+    window.onload = function () {
+      updateTrafficLightIndicators();
+    };
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+    });
+  });
+</script>
+
+<script>
+  // Parsing the payment plan LLRs from Django view to JavaScript object
+  const paymentPlanLLRs = JSON.parse("{{ payment_plan_llrs|safe }}");
+  
+  // Function to set the current LLR based on selected payment plan
+  function setCurrentLLR() {
+      const selectedPlan = document.getElementById('paymentPlan').value;
+      const currentLLRField = document.getElementById('current_llr');
+      
+      currentLLRField.value = paymentPlanLLRs[selectedPlan] || '';
+  }
+  
+  // Attach event listener to dropdown
+  document.getElementById('paymentPlan').addEventListener('change', setCurrentLLR);
+
+  // Initialize current LLR on page load
+  window.addEventListener('load', setCurrentLLR);
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const firstForm = document.forms[0]; // Assuming the first form is at index 0
+    const secondForm = document.forms[1]; // Assuming the second form is at index 1
+
+    // Function to calculate the change in price
+    function calculatePriceChange() {
+      try {
+        // Get the unit price from the first form
+        var unitPrice = parseFloat(firstForm.elements['price'].value);
+
+        // Get the unit price before from the second form
+        var unitPriceBefore = parseFloat(secondForm.elements['unit_price_before'].value);
+
+        // Calculate the change in price
+        var priceChange = unitPrice - unitPriceBefore;
+
+        // Display the calculated price change in the input field
+        document.getElementById('price_change').value = priceChange.toFixed(2);
+      } catch (error) {
+        console.error('Error in calculatePriceChange:', error);
+      }
+    }
+
+    // Attach the function to the input event
+    firstForm.elements['price'].addEventListener('input', calculatePriceChange);
+    secondForm.elements['unit_price_before'].addEventListener('input', calculatePriceChange);
+  });
+</script>
+
+
+
+  {% endblock %}
+
+

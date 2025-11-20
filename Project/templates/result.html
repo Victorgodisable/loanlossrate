@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 class="mt-5">LLR Estimated - Results</h1>
+    <h6 class="mt-4">The estimated LLR for {{ payment_plan }} is: {{ result|floatformat:4 }}</h6>
+
+    <a href="{% url 'index' %}" class="btn btn-primary mt-4">Home</a>
+{% endblock %}

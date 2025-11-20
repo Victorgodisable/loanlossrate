@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Edit Payment Projection
+{% endblock %}
+
+{% block content %}
+<div class="container-md bg-light mt-5">
+    <h1>Edit Payment Projection</h1>
+    <form id="paymentProjectionForm" method="post">
+        {% csrf_token %}
+        <input type="hidden" id="plan_id" name="plan_id" value="{{ payment_projection.pk }}">
+        <div class="row">
+            <div class="col-md-6 mb-1">
+                <label for="id_plan_name" class="form-label">Payment Plan Name</label>
+                <input type="text" id="id_plan_name" name="plan_name" class="form-control" value="{{ payment_projection.plan_name }}" required>
+            </div>
+            <div class="col-md-6 mb-1">
+                <label for="id_product_cost" class="form-label">Product Cost</label>
+                <input type="text" id="id_product_cost" name="product_cost" class="form-control" value="{{ payment_projection.product_cost }}" required>
+            </div>
+        </div>
+
+        <!-- Table for editing date and projection rows -->
+        <table class="table table-bordered" id="projectionTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Projection Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in payment_projection.projections %}
+                    <tr>
+                        <td><input type="month" name="projection_date[]" class="form-control" value="{{ item.date }}" required></td>
+                        <td><input type="number" name="projection_amount[]" class="form-control" value="{{ item.amount }}" required></td>
+                        <td><button type="button" class="btn btn-danger btn-remove-row">Remove</button></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="button" class="btn btn-primary" id="addProjectionRow">Add Row</button>
+        <button type="submit" class="btn btn-success">Update Forecast</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const projectionTableBody = document.querySelector('#projectionTable tbody');
+        const addProjectionRowBtn = document.getElementById('addProjectionRow');
+        const paymentProjectionForm = document.getElementById('paymentProjectionForm');
+        const planId = document.getElementById('plan_id').value;
+      
+
+        addProjectionRowBtn.addEventListener('click', function () {
+            const newRow = `
+                <tr>
+                    <td><input type="month" name="projection_date[]" class="form-control" required></td>
+                    <td><input type="number" name="projection_amount[]" class="form-control" required></td>
+                    <td><button type="button" class="btn btn-danger btn-remove-row">Remove</button></td>
+                </tr>
+            `;
+            projectionTableBody.insertAdjacentHTML('beforeend', newRow);
+        });
+
+        paymentProjectionForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            
+            // Collect form data and convert to JSON
+            const formData = {
+                plan_name: document.getElementById('id_plan_name').value,
+                product_cost: document.getElementById('id_product_cost').value,
+                projections: [],
+            };
+
+            const rows = projectionTableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const dateInput = row.querySelector('input[name="projection_date[]"]');
+                const amountInput = row.querySelector('input[name="projection_amount[]"]');
+                formData.projections.push({
+                    date: dateInput.value,
+                    amount: amountInput.value,
+                });
+            });
+
+            // Now you can send formData to the server using AJAX or any other method
+            console.log('Form Data:', formData);
+            // Uncomment and modify the following lines to send the data using AJAX
+            // Construct fetch URL with plan_id
+    const fetchUrl = `/${planId}/edit/`;
+
+    console.log('Fetch URL:', fetchUrl); // Log to verify the URL
+
+    fetch(fetchUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}', // Ensure you have this token from your Django template
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Server Response:', data);
+        
+                // Check for success status and redirect
+                if (data.status === 'success') {
+                    alert(data.message);  // You can replace this with a more user-friendly notification
+                    window.location.href = '/list-payment-projections/';  // Replace with the actual URL
+                } else {
+                    alert('Failed to add projection. Please try again.');  // Display an error message if needed
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+        // Event listener for removing a row
+        projectionTableBody.addEventListener('click', function (event) {
+            if (event.target.classList.contains('btn-remove-row')) {
+                event.target.closest('tr').remove();
+            }
+        });
+    });
+</script>
+{% endblock %}

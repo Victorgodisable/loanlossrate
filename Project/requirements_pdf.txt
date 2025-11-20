@@ -1,0 +1,17 @@
+# PDF Presentation Generation Requirements
+# Install with: pip install -r requirements_pdf.txt
+
+# Core dependencies
+markdown==3.4.4
+pdfkit==1.0.0
+
+# Additional dependencies for enhanced functionality
+Pygments==2.15.1
+markdown-extensions==0.1.0
+
+# Note: You also need to install wkhtmltopdf system binary
+# Download from: https://wkhtmltopdf.org/downloads.html
+# Windows: Download installer and add to PATH
+# Linux: sudo apt-get install wkhtmltopdf
+# macOS: brew install wkhtmltopdf
+

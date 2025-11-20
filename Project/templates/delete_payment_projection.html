@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Delete Payment Projection
+{% endblock %}
+
+{% block content %}
+<div class="container-md bg-light mt-5">
+    <h1>Delete Device Forecast</h1>
+    <p>Are you sure you want to delete the forecast for {{ payment_projection.plan_name }}?</p>
+    
+    <form method="post" action="{% url 'delete_payment_projection' pk=payment_projection.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'list_payment_projections' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

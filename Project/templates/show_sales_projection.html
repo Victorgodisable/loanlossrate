@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+
+{% block content %}
+<style>
+  th {
+      font-size: 9px;  /* Adjust the font size as needed */
+      padding: 8px;     /* Adjust the padding as needed */
+      font-weight: bold; /* Make the text bold */
+      background-color: #f2f2f2; /* Add a background color */
+  }
+</style>
+ 
+  <div class="container mt-3">
+
+    <a href="{% url 'export_to_excel' %}" class="btn btn-primary">Export to Excel</a>
+    <h1>Estimation Data</h1>
+  <div class="table-responsive">
+    <table id="datatable-buttons" class="table table-bordered table-striped table-hover dt-responsive rap">
+      <thead>
+        <tr>
+          <th>Product Detail</th>
+          <th>Cost Per Credit</th>
+          <th>New Cost Per Credit </th>
+          <th>Loan Duration</th>
+          <th>New Loan Duration</th>
+          <th>Deposit</th>
+          <th>New Deposit</th>
+          <th>Product Price</th>
+          <th>New Product  Price</th>
+          <th>Deposit to Price ratio</th>
+          <th>New Deposit to Price ratio</th>
+          <th>Anticipated Growth</th>
+          <th>Price Change </th>
+          <th>Total Volume Before</th>
+          <th>Total Volume After</th>
+          <th>Unit Price Before</th>
+          <th>Unit Price After</th>
+          <th>Gross Revenue Before</th>
+          <th>Gross Revenue After</th>
+          <th>Current Priced CM2 Before</th>
+          <th>Current Priced CM2 After</th>
+          <th>Expected CM2 Revenue Before</th>
+          <th>Expected CM2 Revenue After</th>
+          <th>Current LLR</th>
+          <th>Estimated LLR</th>
+          <th>LLR Threshold Zero Sum</th>
+          <th>Reason</th>
+          <th>Comment</th>
+          <th>Added By</th>
+        <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in data %}
+          <tr>
+            <td>{{ item.payment_plan }}</td>
+            <td>{{ item.payment_plan.cost_per_credit |intcomma}}</td>
+            <td>{{ item.cost_per_credit |intcomma}}</td>
+            <td>{{ item.payment_plan.loan_duration }}</td>
+            <td>{{ item.loan_duration }}</td>
+            <td>{{ item.payment_plan.deposit |intcomma }}</td>
+            <td>{{ item.deposit |intcomma }}</td>
+            <td>{{ item.payment_plan.product_price |intcomma }}</td>
+            <td>{{ item.price |intcomma}}</td>
+            <td>{{ item.payment_plan.deposit_to_price_ratio }}</td>
+            <td>{{ item.deposit_to_price_ratio }}</td>
+            <td>{{ item.anticipated_growth_percentage }}</td>
+            <td>{{ item.price_change_percentage}}</td>
+            <td>{{ item.total_volume_before |intcomma }}</td>
+            <td>{{ item.total_volume_after |intcomma  }}</td>
+            <td>{{ item.unit_price_before |intcomma }}</td>
+            <td>{{ item.unit_price_after |intcomma }}</td>
+            <td>{{ item.gross_revenue_before |intcomma }}</td>
+            <td>{{ item.gross_revenue_after |intcomma }}</td>
+            <td>{{ item.current_priced_cm2_before_p }}</td>
+            <td>{{ item.current_priced_cm2_after_p }}</td>
+            <td>{{ item.expected_cm2_revenue_before|intcomma  }}</td>
+            <td>{{ item.expected_cm2_revenue_after|intcomma  }}</td>
+            <td>{{ item.predicted_llr_percentage }}</td>
+            <td>{{ item.current_llr_percentage }}</td>
+            <td>{{ item.llr_threshold_zero_sum_percentage }}</td>
+            <td>{{ item.reason }}</td>
+            <td>{{item.comment}}</td>
+            <td>{{ item.created_by.first_name }} {{ item.created_by.last_name }}</td> <!-- Displaying the username of the user -->
+            <td>{{ item.created_date|date:"Y-m-d" }}</td> <!-- Formatting the date -->
+      
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+  <!-- Include the necessary scripts and stylesheets for the datatable -->
+  <!-- Example: You can use CDN or local resources based on your project setup -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+
+  <script>
+    $(document).ready(function() {
+        $('#datatable-buttons').DataTable({
+          searching: true,
+        });
+    });
+  </script>
+
+{% endblock %}

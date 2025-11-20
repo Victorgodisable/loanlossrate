@@ -1,0 +1,54 @@
+<!-- reasons/templates/reasons/reason_list.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-3">
+    <a href="{% url 'reason_add' %}" class="btn btn-success">Add a new reason</a><div class="text-center mb-4">
+        <h2>Decision Reasons</h2>
+      </div>
+  
+    <table  id="datatable-buttons" class="table table-bordered table-striped table-hover dt-responsive rap">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reason in reasons %}
+          <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ reason.name }}</td>
+            <td>
+              <a href="{% url 'reason_edit' pk=reason.pk %}" class="btn btn-primary btn-sm"> <i class="fas fa-edit"></i></a>
+              <a href="{% url 'reason_delete' pk=reason.pk %}" class="btn btn-danger btn-sm"> <i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+  </div>
+
+  <!-- Include the necessary scripts and stylesheets for the datatable -->
+<!-- Example: You can use CDN or local resources based on your project setup -->
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#datatable-buttons').DataTable();
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#my-table').DataTable({
+            searching: true, // Enable global search
+            // Add more options for filtering, sorting, etc. as needed
+            // ...
+        });
+    });
+    
+</script>
+{% endblock %}

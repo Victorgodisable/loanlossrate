@@ -1,0 +1,476 @@
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+{% load humanize %}
+<style>
+ @keyframes blink {
+    0%, 50%, 100% {
+        opacity: 1;
+    }
+    25%, 75% {
+        opacity: 0;
+    }
+}
+
+.traffic-light {
+    display: flex;
+    align-items: center;
+}
+
+.red-pip,
+.green-pip {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-left: 10px;
+    animation: blink 1s infinite; /* Adjust the duration as needed */
+}
+
+.red-pip {
+    background-color: red;
+}
+
+.green-pip {
+    background-color: green;
+}
+
+</style>
+
+<div class="container-fluid">
+    <form action="{% url 'estimates' %}" method="GET" class="mt-5">
+        <div class="row form-group">
+            <div class="col-md-3">
+                <h4><label for="payment_plan">Select Payment Plan Name</label></h4>
+            </div>
+            
+            <div class="col-md-3">
+                <select class="form-control select2 custom-select-size" id="payment_plan" name="payment_plan_name">
+                    <option value="" disabled selected>{{payment_plan}}</option>
+                    {% for payment_plan in payment_plans %}
+                        <option value="{{ payment_plan }}">{{ payment_plan }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <div class="col-md-2">
+                <button type="submit" class="btn-success form-control">Payment Plan Details</button>
+            </div>
+        </div>
+    </form>
+
+    {% for llr in llr_details %}
+  <div class="row card-equal-height">
+    <!-- LLR Pricing Assumpti4on Card -->
+    <div class="col-lg-5 d-flex justify-content-center">
+      <div class="card float-card-right mt-4">
+        <div class="card-header">
+  <h1 >LLR Pricing Assumption</h1>
+  </div>
+  <div class="card-body">
+  <form action="" class="mt-5">
+   
+    <div class="row form-group">
+        <div class="col-md-6">
+       <h4> <label for="payment_plan">Select Payment Plan Name</label></h4>
+       </div>
+       
+       <div class="col-md-6">
+          <select class="form-control select2 custom-select-size" value="" id="payment_plan" name="payment_plan_name" readonly>
+              <option value="" disabled selected>{{llr.payment_plan}}</option>
+              
+            </select>
+        </div></div>
+
+        <div class="row">
+          <div class="col-md-4 text-right">
+            <label>
+              
+            </label>
+          </div>
+          <div class="col-md-4 text-right">
+            <label>
+         
+            </label>
+          </div>
+          <div class="col-md-4 text-right">
+            <label>
+             Old Product Values 
+            </label>
+          </div>
+        </div>
+      <div class="row form-group">
+        <div class="col-md-4">
+          <label for="cost_per_credit">Enter Cost per Credit:</label>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" value="{{llr.cost_per_credit}}" id="cost_per_credit" name="cost_per_credit" >
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" value="{{  old_product_detail.cost_per_credit }}" id="old_cost_per_credit" name="old_cost_per_credit" readonly>
+        </div>
+      </div>
+    
+      <div class="row form-group">
+        <div class="col-md-4">
+          <label for="loan_duration">Enter Loan Duration:</label>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" value="{{llr.loan_duration}}" id="loan_duration" name="loan_duration" >
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="old_loan_duration" value="{{  old_product_detail.loan_duration }}" name="old_loan_duration" readonly>
+        </div>
+      </div>
+    
+      <div class="row form-group">
+        <div class="col-md-4">
+          <label for="deposit">Enter Deposit:</label>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="deposit" value="{{llr.deposit}}" name="deposit" >
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="old_deposit" value="{{  old_product_detail.deposit }}" name="old_deposit" readonly>
+        </div>
+      </div>
+    
+      <div class="row form-group">
+        <div class="col-md-4">
+          <label for="price">Unit Price:</label>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="price" name="price" value="{{llr.price}}" readonly>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" value="{{  old_product_detail.product_price }}" id="old_price" name="old_price" readonly>
+        </div>
+      </div>
+    
+      <div class="row form-group">
+        <div class="col-md-4">
+          <label for="deposit_ratio">Deposit-to-Price Ratio:</label>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="deposit_ratio" name="deposit_to_price_ratio" value="{{llr.deposit_to_price_ratio}}" readonly>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="old_deposit_ratio" value="{{  old_product_detail.deposit_to_price_ratio }}" name="old_deposit_to_price_ratio" readonly required>
+        </div>
+      </div>
+    
+      <!-- You can uncomment this if needed
+      <div class="row form-group">
+        <div class="col-md-6">
+          <label for="daily_rate">Enter Daily Rate:</label>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="daily_rate" name="daily_rate_to_price" required>
+        </div>
+      </div>
+      -->
+    
+      <div class="row form-group">
+       
+        <div class="col-md-3">
+         <b><label for="LLR">Estimated LLR</label></b>
+        </div>
+        <div class="col-md-3">
+          <div class="input-group">
+          <input type="text" class="form-control" value="{{ llr.predicted_llr | floatformat:2 }}" id="predicted_llr" name="predicted_llr" readonly>
+          <div class="input-group-append">
+            <span class="input-group-text">%</span>
+          </div>
+        </div>
+        </div>
+      </div>
+    
+    <!-- Alert Section -->
+    <div class="row form-group">
+      <div class="col-md-12">
+          {% if llr.predicted_llr > llr.llr_threshold_zero_sum %}
+              {% with alert_class='alert-danger' %}
+                  <div class="alert {{ alert_class }}" role="alert">
+                      <h4 class="alert-heading">Wait a minute!</h4>
+                      <p>The estimated LLR is {{ percentage_difference|floatformat:2 }}% greater than the threshold of {{llr.llr_threshold_zero_sum}}%</p>
+                      <p>This means KES {{ additional_loss|floatformat:0|intcomma }} more loss beyond threshold.</p>
+
+
+
+                      <!-- Red Traffic Light Pip -->
+                      <div class="traffic-light">
+                          <div class="red-pip"></div><div class="red-pip"></div><div class="red-pip"></div>
+                      </div>
+                  </div>
+              {% endwith %}
+          {% else %}
+              {% with alert_class='alert-success' %}
+                  <div class="alert {{ alert_class }}" role="alert">
+                    <h4 class="alert-heading">Good To Go!</h4>
+                    <p>You can use these Pricing Assumptions.</p>
+                      <!-- Green Traffic Light Pip -->
+                      <div class="traffic-light">
+                          <div class="green-pip"></div> <div class="green-pip"></div> <div class="green-pip"></div>
+                      </div>
+                  </div>
+              {% endwith %}
+          {% endif %}
+      </div>
+  </div>
+  
+
+
+
+
+
+
+      <!-- Methodology Section -->
+      <div class="row form-group">
+          <div class="col-md-12">
+              <div class="card mt-4">
+                  <div class="card-header">
+                      <h3>Methodology Used</h3>
+                  </div>
+                  <div class="card-body">
+                      <p>12 prediction models were evaluated using Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and R<sup>2</sup>, and the best model used to estimate the LLR using 'Deposit-to-Price Ratio', 'Daily rate', and 'Loan Duration' as inputs (X variables).</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </form>
+    </div>
+    </div>
+    </div>
+  <div class="col-lg-5 d-flex justify-content-center">
+    <div class="card mt-5">
+      <div class="card-header">
+        <h1>Goal Seeking</h1>
+      </div>
+      <div class="card-body">
+        <h4>All other variable costs are assumed to remain constant</h4>
+        {% if error_message %}
+        <div class="alert alert-danger">
+            <h4> {{ error_message }}</h4>
+        </div>
+    {% endif %}
+<form action="" class="mt-5">
+
+  
+  <div class="row">
+    <div class="col-md-8">
+      <div class="form-group">
+        <label for="anticipated_growth">Anticipated Growth in Sales/Volume:</label>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <div class="input-group">
+          <input type="text" class="form-control" id="anticipated_growth" name="anticipated_growth" value="{{llr.anticipated_growth}}" >
+          <div class="input-group-append">
+            <span class="input-group-text">%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-8">
+      <div class="form-group">
+        <label for="price_change">Change in Price:</label>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <div class="input-group">
+          <input type="text" class="form-control" id="price_change" name="price_change" value="{{llr.price_change}}" readonly>
+          <div class="input-group-append">
+            <span class="input-group-text">%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <div class="row">
+    <div class="col-md-4 text-right">
+      <label>
+        
+      </label>
+    </div>
+    <div class="col-md-4 text-right">
+      <label>
+        Before Price Change
+      </label>
+    </div>
+    <div class="col-md-4 text-right">
+      <label>
+        After Price Change 
+      </label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 text-left">
+      <label>Total Volume:</label>
+    </div>
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="total_volume_before" name="total_volume_before" value="{{llr.total_volume_before}}" >
+    </div>
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="total_volume_after" name="total_volume_after"value="{{llr.total_volume_after}}" readonly>
+    </div>
+  </div>
+<br>
+
+
+  <div class="row">
+    <div class="col-md-4 text-left">
+      <label>Average Unit Price:</label>
+    </div>
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="unit_price_before" name="unit_price_before" value="{{llr.unit_price_before}}" readonly>
+    </div>
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="unit_price_after" name="unit_price_after" value="{{llr.unit_price_after}}" readonly>
+    </div>
+  </div>
+  <br>
+
+  <div class="row">
+    <div class="col-md-4 text-left">
+      <label>Gross Revenue:</label>
+    </div>
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="gross_revenue_before" name="gross_revenue_before" value="{{llr.gross_revenue_before}}" readonly>
+    </div>
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="gross_revenue_after" name="gross_revenue_after" value="{{llr.gross_revenue_after}}"  readonly>
+    </div>
+  </div>
+  <br>
+
+  <div class="row">
+    <div class="col-md-4 text-left">
+      <label>Current Priced CM2:</label>
+    </div>
+    <div class="col-md-4">
+      <div class="input-group">
+        <input type="text" class="form-control" id="current_priced_cm2_before" name="current_priced_cm2_before" value="{{llr.current_priced_cm2_before}}" >
+        <div class="input-group-append">
+          <span class="input-group-text">%</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="input-group">
+        <input type="text" class="form-control" id="current_priced_cm2_after" name="current_priced_cm2_after" value="{{llr.current_priced_cm2_after}}" readonly>
+        <div class="input-group-append">
+          <span class="input-group-text">%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-4 text-left">
+      <label>Expected CM2 Revenue:</label>
+    </div>
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="expected_cm2_revenue_before" name="expected_cm2_revenue_before" value="{{llr.expected_cm2_revenue_before}}" readonly>
+    </div>
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="expected_cm2_revenue_after" name="expected_cm2_revenue_after" value="{{llr.expected_cm2_revenue_after}}" readonly>
+    </div>
+  </div>
+  <br>
+
+  <div class="row">
+    <div class="col-md-8 text-left">
+      <div class="form-group">
+        <label for="current_llr">Current LLR:</label>
+      </div>
+    </div>
+    <div class="col-md-3 text-right">
+      <div class="form-group">
+        <div class="input-group">
+          <input type="text" class="form-control" id="current_llr" value="{{ llr.current_llr }}" name="current_llr" readonly>
+          <div class="input-group-append">
+            <span class="input-group-text">%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-8 text-left">
+      <div class="form-group">
+        <label for="llr_threshold_zero_sum">LLR Threshold at Which the volume increase is a zero-sum game:</label>
+      </div>
+    </div>
+    <div class="col-md-3 text-right">
+      <div class="form-group">
+        <div class="input-group">
+          <input type="text" class="form-control" id="llr_threshold_zero_sum" name="llr_threshold_zero_sum" value="{{llr.llr_threshold_zero_sum}}" readonly>
+          <div class="input-group-append">
+            <span class="input-group-text">%</span>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row form-group">
+    <div class="col-md-6">
+        <label for="reason">Reason:</label>
+    </div>
+    <div class="col-md-6">
+      <select class="form-control" id="reason" name="reason">
+        <option value="LLR with in threshold">{{ llr.reason }}</option>
+          
+          <!-- Add more reasons as needed -->
+      </select>
+    </div>
+</div>
+
+<div class="row form-group">
+  <div class="col-md-6">
+      <label for="comment">Comment:</label>
+  </div>
+  <div class="col-md-6">
+      <textarea class="form-control" id="comment" name="comment" rows="3" readonly>{{ llr.comment }}</textarea>
+  </div>
+</div>
+  <div class="row">
+    <div class="col-md-3">
+      
+ 
+</div>
+{% endfor %}
+
+</form>
+
+</div>
+<h2 class="btn btn-dark text-left display-2 mb-0">
+  <b>
+      • We assume all factors remain constant.<br>
+      • All other variables are assumed to remain constant.<br>
+      • We assume zero impact on upgrades.
+  </b>
+</h2>
+</div>
+
+</div>
+</div>
+
+</div> 
+<script>
+    $(document).ready(function() {
+  $('.select2').select2();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}
+     Forecast
+{% endblock %}
+
+{% block content %}
+<style>
+    th {
+        font-size: 9px;  /* Adjust the font size as needed */
+        padding: 8px;     /* Adjust the padding as needed */
+        font-weight: bold; /* Make the text bold */
+        background-color: #f2f2f2; /* Add a background color */
+    }
+</style>
+<div class="container mt-5">
+    <a  class="btn btn-success"  href="{% url 'add_payment_projection'%}">Add Device <a/>
+    <h1>Forecast</h1>
+    <table id="datatable-buttons" class="table table-bordered table-striped table-hover dt-responsive rap">
+        <thead>
+            <tr>
+                <th>Device Name</th>
+                <th>Product Cost</th>
+                <th>Jan-24</th>
+                <th>Feb-24</th>
+                <th>Mar-24</th>
+                <th>Apr-24</th>
+                <th>May-24</th>
+                <th>Jun-24</th>
+                <th>Jul-24</th>
+                <th>Aug-24</th>
+                <th>Sep-24</th>
+                <th>Oct-24</th>
+                <th>Nov-24</th>
+                <th>Dec-24</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for projection in projections %}
+            <tr>
+                <td>{{ projection.plan_name }}</td>
+                <td>{{ projection.product_cost }}</td>
+                {% for item in projection.projections %}
+                    <td>{{ item.amount }}</td>
+                {% endfor %}
+                <td>
+                    <a class="btn btn-primary" href="{% url 'edit_payment_projection' projection.pk %}">
+                        <i class="fas fa-edit"></i> <!-- Edit Icon -->
+                    </a>
+                    
+                    <a class="btn btn-danger" href="{% url 'delete_payment_projection' projection.pk %}">
+                        <i class="fas fa-trash-alt"></i> <!-- Delete Icon -->
+                    </a>
+                    
+                </td>
+            </tr>
+        {% endfor %}
+       
+        </tbody>
+    </table>
+</div>
+
+<!-- Include the necessary scripts and stylesheets for the datatable -->
+<!-- Example: You can use CDN or local resources based on your project setup -->
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#datatable-buttons').DataTable();
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#my-table').DataTable({
+            searching: true, // Enable global search
+            // Add more options for filtering, sorting, etc. as needed
+            // ...
+        });
+    });
+    
+</script>
+{% endblock %}
+

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSV Upload Success</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('../static/images/14.jpg');
+            background-size: cover;
+        }
+        
+        .container-fluid {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            color: white;
+        }
+        
+        h1, h2, h3 {
+            color: white;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        img {
+            max-width: 100%;  /* Ensure this is responsive */
+            height: auto;    /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'index' %}" class="btn btn-primary mt-4">Home</a>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-5">
+                <h1>Model Evaluation Results</h1>
+                
+                <h2>Model R-squared</h2>
+                <ul>
+                    {% for model_accuracy in model_accuracies %}
+                    <li>{{ model_accuracy.0 }}:
+                        <p>R-squared: {{ model_accuracy.1 }}</p>
+                        <p>Mean Absolute Error: {{model_accuracy.2 }}</p>
+                        <p>Root Mean Squared Error: {{model_accuracy.3 }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+              
+            </div>
+            
+            <div class="col-md-6">
+                <h2>Best Model</h2>
+                <p>Selected Model: {{ best_model_name }} with:</p>
+                <p>R-squared: {{ best_accuracy }}</p>
+                <p>Mean Absolute Error: {{ best_mae }}</p>
+                <p>Root Mean Squared Error: {{ best_rmse }}</p>
+                <img src="data:image/png;base64,{{ best_graph_url }}" alt="Actual vs Predicted LLR">
+            </div>
+        </div>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
