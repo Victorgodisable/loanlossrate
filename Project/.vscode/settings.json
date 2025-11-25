@@ -1,9 +1,9 @@
 {
     "python.testing.unittestArgs": [
-        "-v",
-        "-s",
+        "-v",                         //shows detailed test results.
+        "-s",                         //Sets the folder where your test files are located.
         "./Project",
-        "-p",
+        "-p",                         //Runs all Python files ending in test.py (e.g., model_test.py, api_test.py).
         "*test.py"
     ],
     "python.testing.pytestEnabled": false,
@@ -11,3 +11,4 @@
     "python.analysis.autoImportCompletions": false,
     "python.analysis.typeCheckingMode": "basic"
 }
+
