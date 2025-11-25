@@ -3,10 +3,10 @@
 
 ---
 
-**Presented by:** [Your Name]  
-**Date:** [Presentation Date]  
-**Supervisor:** [Supervisor Name]  
-**Institution:** [Your Institution]
+**Presented by:** NASSALI VICTOR  
+**Date:** 1st December 2025  
+**Lecturer:** DR. MUYAMA LILLIAN  
+**Institution:** MAKERERE UNIVERSITY
 
 ---
 
